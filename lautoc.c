@@ -271,7 +271,7 @@ int luaA_push_char(lua_State* L, luaA_Type type_id, const void* c_in) {
 }
 
 void luaA_to_char(lua_State* L, luaA_Type type_id,  void* c_out, int index) {
-  *(char*)c_out = lua_tointeger(L, index);
+  *(char*)c_out = (char)lua_tointeger(L, index);
 }
 
 int luaA_push_signed_char(lua_State* L, luaA_Type type_id, const void* c_in) {
@@ -280,7 +280,7 @@ int luaA_push_signed_char(lua_State* L, luaA_Type type_id, const void* c_in) {
 }
 
 void luaA_to_signed_char(lua_State* L, luaA_Type type_id, void* c_out, int index) {
-  *(signed char*)c_out = lua_tointeger(L, index);
+  *(signed char*)c_out = (signed char)lua_tointeger(L, index);
 }
 
 int luaA_push_unsigned_char(lua_State* L, luaA_Type type_id, const void* c_in) {
@@ -289,7 +289,7 @@ int luaA_push_unsigned_char(lua_State* L, luaA_Type type_id, const void* c_in) {
 }
 
 void luaA_to_unsigned_char(lua_State* L, luaA_Type type_id, void* c_out, int index) {
-  *(unsigned char*)c_out = lua_tointeger(L, index);
+  *(unsigned char*)c_out = (unsigned char)lua_tointeger(L, index);
 }
 
 int luaA_push_short(lua_State* L, luaA_Type type_id, const void* c_in) {
@@ -298,7 +298,7 @@ int luaA_push_short(lua_State* L, luaA_Type type_id, const void* c_in) {
 }
 
 void luaA_to_short(lua_State* L, luaA_Type type_id, void* c_out, int index) {
-  *(short*)c_out = lua_tointeger(L, index);
+  *(short*)c_out = (short)lua_tointeger(L, index);
 }
 
 int luaA_push_unsigned_short(lua_State* L, luaA_Type type_id, const void* c_in) {
@@ -307,7 +307,7 @@ int luaA_push_unsigned_short(lua_State* L, luaA_Type type_id, const void* c_in) 
 }
 
 void luaA_to_unsigned_short(lua_State* L, luaA_Type type_id, void* c_out, int index) {
-  *(unsigned short*)c_out = lua_tointeger(L, index);
+  *(unsigned short*)c_out = (unsigned short)lua_tointeger(L, index);
 }
 
 int luaA_push_int(lua_State* L, luaA_Type type_id, const void* c_in) {
@@ -316,7 +316,7 @@ int luaA_push_int(lua_State* L, luaA_Type type_id, const void* c_in) {
 }
 
 void luaA_to_int(lua_State* L, luaA_Type type_id, void* c_out, int index) {
-  *(int*)c_out = lua_tointeger(L, index);
+  *(int*)c_out = (int)lua_tointeger(L, index);
 }
 
 int luaA_push_unsigned_int(lua_State* L, luaA_Type type_id, const void* c_in) {
@@ -325,7 +325,7 @@ int luaA_push_unsigned_int(lua_State* L, luaA_Type type_id, const void* c_in) {
 }
 
 void luaA_to_unsigned_int(lua_State* L, luaA_Type type_id, void* c_out, int index) {
-  *(unsigned int*)c_out = lua_tointeger(L, index);
+  *(unsigned int*)c_out = (unsigned int)lua_tointeger(L, index);
 }
 
 int luaA_push_long(lua_State* L, luaA_Type type_id, const void* c_in) {
@@ -334,7 +334,7 @@ int luaA_push_long(lua_State* L, luaA_Type type_id, const void* c_in) {
 }
 
 void luaA_to_long(lua_State* L, luaA_Type type_id, void* c_out, int index) {
-  *(long*)c_out = lua_tointeger(L, index);
+  *(long*)c_out = (long)lua_tointeger(L, index);
 }
 
 int luaA_push_unsigned_long(lua_State* L, luaA_Type type_id, const void* c_in) {
@@ -343,7 +343,7 @@ int luaA_push_unsigned_long(lua_State* L, luaA_Type type_id, const void* c_in) {
 }
 
 void luaA_to_unsigned_long(lua_State* L, luaA_Type type_id, void* c_out, int index) {
-  *(unsigned long*)c_out = lua_tointeger(L, index);
+  *(unsigned long*)c_out = (unsigned long)lua_tointeger(L, index);
 }
 
 int luaA_push_long_long(lua_State* L, luaA_Type type_id, const void* c_in) {
@@ -370,7 +370,7 @@ int luaA_push_float(lua_State* L, luaA_Type type_id, const void* c_in) {
 }
 
 void luaA_to_float(lua_State* L, luaA_Type type_id, void* c_out, int index) {
-  *(float*)c_out = lua_tonumber(L, index);
+  *(float*)c_out = (float)lua_tonumber(L, index);
 }
 
 int luaA_push_double(lua_State* L, luaA_Type type_id, const void* c_in) {
@@ -471,7 +471,7 @@ int luaA_struct_push_member_offset_type(lua_State* L, luaA_Type type, size_t off
       lua_getfield(L, -1, "type");
       luaA_Type stype = lua_tointeger(L, -1);
       lua_pop(L, 4);
-      return luaA_push_type(L, stype, c_in + offset);
+      return luaA_push_type(L, stype, ((char*)c_in) + offset);
     }
     
     lua_pop(L, 3);
@@ -504,7 +504,7 @@ int luaA_struct_push_member_name_type(lua_State* L, luaA_Type type, const char* 
       lua_getfield(L, -1, "offset");
       size_t offset = lua_tointeger(L, -1);
       lua_pop(L, 4);
-      return luaA_push_type(L, stype, c_in + offset);
+      return luaA_push_type(L, stype, ((char*)c_in) + offset);
     }
     
     lua_pop(L, 3);
@@ -534,7 +534,7 @@ void luaA_struct_to_member_offset_type(lua_State* L, luaA_Type type, size_t offs
       lua_getfield(L, -1, "type");
       luaA_Type stype = lua_tointeger(L, -1);
       lua_pop(L, 4);
-      luaA_to_type(L, stype, c_out + offset, index);
+      luaA_to_type(L, stype, ((char*)c_out) + offset, index);
       return;
     }
     
@@ -568,7 +568,7 @@ void luaA_struct_to_member_name_type(lua_State* L, luaA_Type type, const char* m
       lua_getfield(L, -1, "offset");
       size_t offset = lua_tointeger(L, -1);
       lua_pop(L, 4);
-      luaA_to_type(L, stype, c_out + offset, index);
+      luaA_to_type(L, stype, ((char*)c_out) + offset, index);
       return;
     }
     
@@ -1123,7 +1123,7 @@ static int luaA_call_entry(lua_State* L) {
   }
 
   for (int i = 0; i < arg_num; i++) {
-    lua_pushinteger(L, i+1);
+    lua_pushinteger(L, (long long int)i+1);
     lua_gettable(L, -2);
     luaA_Type arg_type = lua_tointeger(L, -1);
     lua_pop(L, 1);
@@ -1150,8 +1150,8 @@ static int luaA_call_entry(lua_State* L) {
   lua_Integer arg_ptr = lua_tointeger(L, -1);
   lua_pop(L, 1);
 
-  void* ret_data = ret_stack + ret_ptr;
-  void* arg_data = arg_stack + arg_ptr;
+  void* ret_data = ((char*)ret_stack) + ret_ptr;
+  void* arg_data = ((char*)arg_stack) + arg_ptr;
   
   /* If fixed allocation exhausted use heap instead */
   
@@ -1199,12 +1199,12 @@ static int luaA_call_entry(lua_State* L) {
 
   void* arg_pos = arg_data;
   for (int i = 0; i < arg_num; i++) {
-    lua_pushinteger(L, i+1);
+    lua_pushinteger(L, (long long int)i+1);
     lua_gettable(L, -2);
     luaA_Type arg_type = lua_tointeger(L, -1);
     lua_pop(L, 1);
-    luaA_to_type(L, arg_type, arg_pos, -arg_num+i-2);
-    arg_pos += luaA_typesize(L, arg_type);
+    luaA_to_type(L, arg_type, arg_pos, -(int)arg_num+i-2);
+    arg_pos = ((char*)arg_pos) + luaA_typesize(L, arg_type);
   }
   
   lua_pop(L, 1);
@@ -1291,7 +1291,7 @@ void luaA_function_register_type(lua_State* L, void* src_func, luaA_Func auto_fu
   va_list va;
   va_start(va, num_args);
   for (int i = 0; i < num_args; i++) {
-    lua_pushinteger(L, i+1);
+    lua_pushinteger(L, (long long int)i+1);
     lua_pushinteger(L, va_arg(va, luaA_Type));
     lua_settable(L, -3);
   }

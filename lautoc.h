@@ -53,7 +53,31 @@ LAC_API void luaA_close(lua_State* L);
 ** Types
 */
 
-#define luaA_type(L, type) luaA_type_add(L, #type, sizeof(type))
+#define CAT(a, b) a ## b
+#define SECOND(a, b, ...) b
+#define IS_PROBE(...) SECOND(__VA_ARGS__, 0)
+#define PROBE() ~, 1
+#define NOT(x) IS_PROBE(CAT(_NOT_, x))
+#define _NOT_0 PROBE()
+#define BOOL(x) NOT(NOT(x))
+
+#define IF(c) _IF(BOOL(c))
+#define _IF(c) CAT(_IF_, c)
+#define _IF_0(...)
+#define _IF_1(...) __VA_ARGS__
+
+#define IS_PAREN(x) IS_PROBE(IS_PAREN_PROBE x)
+#define IS_PAREN_PROBE(...) PROBE()
+
+#define IS_VOID(t) IS_PAREN( CAT(_IS_VOID_,t) (()) )
+#define _IS_VOID_void(x)  x
+
+#define SIZEOF(t) \
+  IF(IS_VOID(t)) (1) \
+    IF(NOT(IS_VOID(t)))(sizeof(t))
+
+
+#define luaA_type(L, type) luaA_type_add(L, #type, SIZEOF(type))
 
 enum {
   LUAA_INVALID_TYPE = -1
@@ -184,7 +208,7 @@ LAC_API const char* luaA_struct_next_member_name_type(lua_State* L, luaA_Type ty
 ** Enums
 */
 
-#define luaA_enum(L, type) luaA_enum_type(L, luaA_type(L, type), sizeof(type))
+#define luaA_enum(L, type) luaA_enum_type(L, luaA_type(L, type), SIZEOF(type))
 #define luaA_enum_value(L, type, value) luaA_enum_value_type(L, luaA_type(L, type), (const type[]){value}, #value);
 #define luaA_enum_value_name(L, type, value, name) luaA_enum_value_type(L, luaA_type(L, type), (const type[]){value}, name);
 
