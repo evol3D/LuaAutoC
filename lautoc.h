@@ -237,18 +237,12 @@ LAC_API const char* luaA_enum_next_value_name_type(lua_State* L, luaA_Type type,
 ** Functions
 */
 
-#include "lautocall.h"
-
-#define luaA_function(L, func, ret_t, ...) luaA_function_declare(func, ret_t, ##__VA_ARGS__); luaA_function_register(L, func, ret_t, ##__VA_ARGS__)
-#define luaA_function_declare(func, ret_t, ...) LUAA_DECLARE(func, ret_t, LUAA_COUNT(__VA_ARGS__), LUAA_SUFFIX(ret_t), ##__VA_ARGS__)
-#define luaA_function_register(L, func, ret_t, ...) LUAA_REGISTER(L, func, ret_t, LUAA_COUNT(__VA_ARGS__), ##__VA_ARGS__)
-
 enum {
   LUAA_RETURN_STACK_SIZE   =  256,
   LUAA_ARGUMENT_STACK_SIZE = 2048
 };
 
-typedef void (*luaA_Func)(void*, void*);
+typedef void (*luaA_Func)(void*, void*, void(*)(), size_t*);
 
 LAC_API int luaA_call(lua_State* L, void* func_ptr);
 LAC_API int luaA_call_name(lua_State* L, const char* func_name);

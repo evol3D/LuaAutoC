@@ -1106,12 +1106,16 @@ static int luaA_call_entry(lua_State* L) {
   luaA_Type ret_type = lua_tointeger(L, -1);
   lua_pop(L, 1);
   
+  size_t passed_sizes[11];
+
   size_t ret_size = luaA_typesize(L, ret_type);
+
+  passed_sizes[0] = ret_size;
   
   /* Get total arguments sizes */
-  
+
   lua_getfield(L, -1, "arg_types");
-  
+
   size_t arg_size = 0;
   size_t arg_num  = lua_objlen(L, -1);
 
@@ -1122,13 +1126,16 @@ static int luaA_call_entry(lua_State* L) {
     return 0;
   }
 
+
   for (int i = 0; i < arg_num; i++) {
     lua_pushinteger(L, (long long int)i+1);
     lua_gettable(L, -2);
     luaA_Type arg_type = lua_tointeger(L, -1);
     lua_pop(L, 1);
-    arg_size += luaA_typesize(L, arg_type);
+    passed_sizes[i+1] = luaA_typesize(L, arg_type);
+    arg_size += passed_sizes[i+1];
   }
+
   
   lua_pop(L, 1);
   
@@ -1219,9 +1226,13 @@ static int luaA_call_entry(lua_State* L) {
   
   lua_getfield(L, -1, "auto_func");
   luaA_Func auto_func = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  lua_getfield(L, -1, "src_func");
+  void* src_func = lua_touserdata(L, -1);
   lua_pop(L, 2);
   
-  auto_func(ret_data, arg_data);
+  auto_func(ret_data, arg_data, src_func, passed_sizes);
   
   int count = luaA_push_type(L, ret_type, ret_data);
   
@@ -1272,7 +1283,7 @@ int luaA_call_name(lua_State* L, const char* func_name) {
   return 0;
 }
 
-void luaA_function_register_type(lua_State* L, void* src_func, luaA_Func auto_func, const char* name, luaA_Type ret_t, int num_args, ...) {
+void luaA_function_register_type(lua_State* L, void* src_func, luaA_Func auto_func, const char* name, luaA_Type ret_t, int num_args, luaA_Type *args) {
   
   lua_getfield(L, LUA_REGISTRYINDEX, LUAA_REGISTRYPREFIX "functions");
   lua_pushstring(L, name);
@@ -1288,14 +1299,11 @@ void luaA_function_register_type(lua_State* L, void* src_func, luaA_Func auto_fu
   lua_pushstring(L, "arg_types");
   lua_newtable(L);
   
-  va_list va;
-  va_start(va, num_args);
   for (int i = 0; i < num_args; i++) {
     lua_pushinteger(L, (long long int)i+1);
-    lua_pushinteger(L, va_arg(va, luaA_Type));
+    lua_pushinteger(L, args[i]);
     lua_settable(L, -3);
   }
-  va_end(va);
   
   lua_settable(L, -3);
   lua_settable(L, -3);
@@ -1310,5 +1318,4 @@ void luaA_function_register_type(lua_State* L, void* src_func, luaA_Func auto_fu
   
   lua_settable(L, -3);
   lua_pop(L, 1);
-  
 }
