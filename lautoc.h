@@ -247,6 +247,6 @@ typedef void (*luaA_Func)(void*, void*, void(*)(), size_t*);
 LAC_API int luaA_call(lua_State* L, void* func_ptr);
 LAC_API int luaA_call_name(lua_State* L, const char* func_name);
 
-LAC_API void luaA_function_register_type(lua_State* L, void* src_func, luaA_Func auto_func, const char* name, luaA_Type ret_tid, int num_args, ...);
+LAC_API void luaA_function_register_type(lua_State* L, void* src_func, luaA_Func auto_func, const char* name, luaA_Type ret_t, int num_args, luaA_Type *args);
 
 #endif
